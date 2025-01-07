@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .clock-container {
+            width: 400px;
+            margin: 50px auto;
+            position: relative;
+        }
+        .clock {
+            width: 300px;
+            height: 300px;
+            border: 10px solid black;
+            border-radius: 50%;
+            position: relative;
+            margin: 0 auto;
+        }
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background: black;
+            width: 3px;
+            height: 150px;
+            margin-left: -1.5px;
+        }
+        .hour-hand {
+            width: 0px;
+            height: 60px;
+            margin-left: -2px;
+            border:2px dashed #333;
+            background: none;
+        }
+        .minute-hand {
+            height: 150px;
+            border:2px dashed #666;
+            background: none;
+            width: 0;
+        }
+        .center {
+            width: 10px;
+            height: 10px;
+            background: black;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .number {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .controls {
+            margin-top: 80px;
+            text-align: center;
+        }
+        .hand1 { background: red; }
+        .hand2 { background: blue; }
+        .hand3 { background: green; }
+        .hand4 { background: purple; }
+        .hand5 { background: orange; }
+
+        .numbers-container {
+            border: 40px solid yellow;
+            border-radius: 50%;
+            height: 100%;
+            width: 325px;
+            height: 325px;
+            position: absolute;
+            top: -42px;
+            left: -3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="numbers-container"></div>
+        <div class="clock">
+            <div class="hand hour-hand"></div>
+            <div class="hand minute-hand"></div>
+            <div class="hand hand1"></div>
+            <div class="hand hand2"></div>
+            <div class="hand hand3"></div>
+            <div class="hand hand4"></div>
+            <div class="hand hand5"></div>
+            <div class="center"></div>
+        </div>
+        <div class="controls">
+            <div>
+                <input type="text" id="hand1" placeholder="Hand 1 (0-360)" value="270">
+                <input type="text" id="hand2" placeholder="Hand 2 (0-360)" value="30">
+                <input type="text" id="hand3" placeholder="Hand 3 (0-360)" value="90">
+                <input type="text" id="hand4" placeholder="Hand 4 (0-360)" value="105">
+                <input type="text" id="hand5" placeholder="Hand 5 (0-360)" value="288">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createNumbers() {
+            const container = document.querySelector('.numbers-container');
+            const clockWidth = 300;
+            const radius = 180;
+            
+            for (let i = 1; i <= 12; i++) {
+                const number = document.createElement('div');
+                number.className = 'number';
+                number.textContent = i;
+                
+                const angle = (i * 30 - 90) * (Math.PI / 180);
+                const x = radius * Math.cos(angle);
+                const y = radius * Math.sin(angle);
+                
+                number.style.left = `${x + clockWidth/2}px`;
+                number.style.top = `${y + clockWidth/2}px`;
+                container.appendChild(number);
+            }
+        }
+
+        function updateHands() {
+            for (let i = 1; i <= 5; i++) {
+                const value = document.getElementById(`hand${i}`).value;
+                const deg = parseFloat(value) || 0;
+                document.querySelector(`.hand${i}`).style.transform = `rotate(${deg}deg)`;
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const minutes = now.getMinutes();
+            const hours = now.getHours();
+            
+            const minutesDeg = (minutes / 60) * 360;
+            const hoursDeg = ((hours % 12 + minutes / 60) / 12) * 360;
+
+            document.querySelector('.minute-hand').style.transform = `rotate(${minutesDeg}deg)`;
+            document.querySelector('.hour-hand').style.transform = `rotate(${hoursDeg}deg)`;
+
+            requestAnimationFrame(updateClock);
+        }
+
+        createNumbers();
+        
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', updateHands);
+        });
+        
+        updateHands();
+        requestAnimationFrame(updateClock);
+    </script>
+</body>
+</html>
