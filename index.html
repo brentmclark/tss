@@ -77,6 +77,13 @@
             top: -42px;
             left: -3px;
         }
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            gap: 5px;
+            margin: 15px;
+        }
     </style>
 </head>
 <body>
@@ -94,11 +101,26 @@
         </div>
         <div class="controls">
             <div>
-                <input type="text" id="hand1" placeholder="Hand 1 (0-360)" value="270">
-                <input type="text" id="hand2" placeholder="Hand 2 (0-360)" value="30">
-                <input type="text" id="hand3" placeholder="Hand 3 (0-360)" value="90">
-                <input type="text" id="hand4" placeholder="Hand 4 (0-360)" value="105">
-                <input type="text" id="hand5" placeholder="Hand 5 (0-360)" value="288">
+                <div class="input-container">
+                    <label for="hand1">Hand 1 (red)</label>
+                    <input type="text" id="hand1" placeholder="Hand 1 (0-360)" value="9:00">
+                </div>
+                <div class="input-container">
+                    <label for="hand2">Hand 2 (blue)</label>
+                    <input type="text" id="hand2" placeholder="Hand 2 (0-360)" value="1:00">
+                </div>
+                <div class="input-container">
+                    <label for="hand2">Hand 3 (green)</label>
+                    <input type="text" id="hand3" placeholder="Hand 3 (0-360)" value="3:00">
+                </div>
+                <div class="input-container">
+                    <label for="hand2">Hand 4 (purple)</label>
+                    <input type="text" id="hand4" placeholder="Hand 4 (0-360)" value="4:00">
+                </div>
+                <div class="input-container">
+                    <label for="hand2">Hand 5 (orange)</label>
+                    <input type="text" id="hand5" placeholder="Hand 5 (0-360)" value="4:00">
+                </div>
             </div>
         </div>
     </div>
@@ -127,7 +149,20 @@
         function updateHands() {
             for (let i = 1; i <= 5; i++) {
                 const value = document.getElementById(`hand${i}`).value;
-                const deg = parseFloat(value) || 0;
+
+                const valueParts = value.split(':');
+                let hours = parseInt(valueParts[0]);
+                let minutes = parseInt(valueParts[1]);
+
+                // Convert 24h to 12h format
+                hours = hours % 12;
+                
+                // Calculate degrees
+                const hourDegrees = ((hours + minutes/60) / 12) * 360;
+                const minuteDegrees = (minutes / 60) * 360;
+                const totalDegrees = hourDegrees + minuteDegrees;
+
+                const deg = parseFloat(totalDegrees) || 0;
                 document.querySelector(`.hand${i}`).style.transform = `rotate(${deg}deg)`;
             }
         }
