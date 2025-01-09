@@ -14,6 +14,7 @@
             border-radius: 50%;
             position: relative;
             margin: 0 auto;
+            background-color: cyan;
         }
         .hand {
             position: absolute;
@@ -102,24 +103,24 @@
         <div class="controls">
             <div>
                 <div class="input-container">
-                    <label for="hand1">Hand 1 (red)</label>
-                    <input type="text" id="hand1" placeholder="Hand 1 (0-360)" value="9:00">
+                    <label for="hand1">Go-live time (red)</label>
+                    <input type="text" id="hand1" placeholder="Go-live time" value="9:00">
                 </div>
                 <div class="input-container">
-                    <label for="hand2">Hand 2 (blue)</label>
-                    <input type="text" id="hand2" placeholder="Hand 2 (0-360)" value="1:00">
+                    <label for="hand2">Blue hand (T-minus time 1)</label>
+                    <input type="text" id="hand2" placeholder="T-minus time 1" value="8:00">
                 </div>
                 <div class="input-container">
-                    <label for="hand2">Hand 3 (green)</label>
-                    <input type="text" id="hand3" placeholder="Hand 3 (0-360)" value="3:00">
+                    <label for="hand2">Green hand (T-minus time 2)</label>
+                    <input type="text" id="hand3" placeholder="T-minus time 2" value="6:00">
                 </div>
                 <div class="input-container">
-                    <label for="hand2">Hand 4 (purple)</label>
-                    <input type="text" id="hand4" placeholder="Hand 4 (0-360)" value="4:00">
+                    <label for="hand2">Purple Hand (T-minus time 3)</label>
+                    <input type="text" id="hand4" placeholder="T-minus time 3" value="5:00">
                 </div>
                 <div class="input-container">
-                    <label for="hand2">Hand 5 (orange)</label>
-                    <input type="text" id="hand5" placeholder="Hand 5 (0-360)" value="4:00">
+                    <label for="hand2">Orange Hand (T-minus time 4)</label>
+                    <input type="text" id="hand5" placeholder="T-minus time 4" value="0:30">
                 </div>
             </div>
         </div>
@@ -147,24 +148,34 @@
         }
 
         function updateHands() {
-            for (let i = 1; i <= 5; i++) {
+            const goLiveTime = document.getElementById('hand1').value;
+            const goLiveDegrees = getTotalDegrees(goLiveTime);
+            document.querySelector(`.hand1`).style.transform = `rotate(${goLiveDegrees}deg)`;
+
+            for (let i = 2; i <= 5; i++) {
                 const value = document.getElementById(`hand${i}`).value;
 
-                const valueParts = value.split(':');
-                let hours = parseInt(valueParts[0]);
-                let minutes = parseInt(valueParts[1]);
+                const totalDegrees = getTotalDegrees(value);
 
-                // Convert 24h to 12h format
-                hours = hours % 12;
-                
-                // Calculate degrees
-                const hourDegrees = ((hours + minutes/60) / 12) * 360;
-                const minuteDegrees = (minutes / 60) * 360;
-                const totalDegrees = hourDegrees + minuteDegrees;
-
-                const deg = parseFloat(totalDegrees) || 0;
+                const deg = parseFloat(goLiveDegrees - totalDegrees) || 0;
                 document.querySelector(`.hand${i}`).style.transform = `rotate(${deg}deg)`;
             }
+        }
+
+        function getTotalDegrees(time) {
+            const valueParts = time.split(':');
+            let hours = parseInt(valueParts[0]);
+            let minutes = parseInt(valueParts[1]);
+
+            // Convert 24h to 12h format
+            hours = hours % 12;
+            
+            // Calculate degrees
+            const hourDegrees = ((hours + minutes/60) / 12) * 360;
+            const minuteDegrees = (minutes / 60);
+            console.log({ hourDegrees, minuteDegrees, minutes, hours });
+            const totalDegrees = hourDegrees + minuteDegrees;
+            return totalDegrees;
         }
 
         function updateClock() {
